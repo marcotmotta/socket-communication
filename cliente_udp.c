@@ -10,7 +10,7 @@
 int main(int argc, char *argv[]) {
 
     int soquete, n, port = 5000, aux_index;
-    char received[80], message[80];
+    char received[81], message[81];
     struct sockaddr_in server;
 
     fgets(message, sizeof(message), stdin);

@@ -11,33 +11,32 @@
 void chat(int soquete) {
 
     int message_length, case_aux;
-    char message[80], message_aux;
+    char message[81], message_aux;
 
-    while(true) {
-        memset(message, 0, 80);
+    memset(message, 0, 81);
 
-        read(soquete, message, sizeof(message));
+    read(soquete, message, sizeof(message));
 
-        message_length = strlen(message);
+    message_length = strlen(message);
 
-        for(int i = 0; i < (message_length/2); i++) {
-            message_aux = message[i];
-            message[i] = message[message_length - i - 1];
-            message[message_length - i - 1] = message_aux;
-        }
-
-        case_aux = 0;
-        while (message[case_aux] != '\0') {
-            if (message[case_aux] >= 'a' && message[case_aux] <= 'z') {
-                message[case_aux] = message[case_aux] - 32;
-            } else if (message[case_aux] >= 'A' && message[case_aux <= 'Z']) {
-                message[case_aux] = message[case_aux] + 32;
-            }
-            case_aux++;
-        }
-
-        write(soquete, message, sizeof(message));
+    for(int i = 0; i < (message_length/2); i++) {
+        message_aux = message[i];
+        message[i] = message[message_length - i - 1];
+        message[message_length - i - 1] = message_aux;
     }
+
+    case_aux = 0;
+    while (message[case_aux] != '\0') {
+        if (message[case_aux] >= 'a' && message[case_aux] <= 'z') {
+            message[case_aux] = message[case_aux] - 32;
+        } else if (message[case_aux] >= 'A' && message[case_aux <= 'Z']) {
+            message[case_aux] = message[case_aux] + 32;
+        }
+        case_aux++;
+    }
+
+    write(soquete, message, sizeof(message));
+
 }
 
 int main(int argc, char *argv[]) {
@@ -52,16 +51,16 @@ int main(int argc, char *argv[]) {
     server.sin_addr.s_addr = htonl(INADDR_ANY);
     server.sin_port = htons(port);
 
-    // Binding newly created socket to given IP and verification
     bind(soquete, (struct sockaddr*)&server, sizeof(server));
 
-    // Now server is ready to listen and verification
-    listen(soquete, 5);
+    while(1) {
+        listen(soquete, 5);
 
-    len = sizeof(client);
-    communication = accept(soquete, (struct sockaddr*)&client, &len);
+        len = sizeof(client);
+        communication = accept(soquete, (struct sockaddr*)&client, &len);
 
-    chat(communication);
+        chat(communication);
+    }
 
     close(soquete);
 }

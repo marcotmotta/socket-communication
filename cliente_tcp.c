@@ -10,7 +10,7 @@
 void chat(int soquete) {
 
     int aux_index;
-    char message[80];
+    char message[81];
 
     memset(message, 0, sizeof(message));
 
