@@ -8,6 +8,13 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+/**
+  *  O esqueleto do código abaixo foi inspirado na seguinte implementação:
+  *  https://www.geeksforgeeks.org/udp-client-server-using-connect-c-implementation/
+  *  Vale ressaltar que apesar da lógica ter sido aproveitada o código é estritamente
+  *  diferente, além de realizar ações e produzir resultados totalmente distintos.
+  */
+
 int main(int argc, char *argv[]) {
 
     int soquete, n, port, aux_index;
