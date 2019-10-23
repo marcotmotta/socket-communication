@@ -13,7 +13,6 @@ void chat(int soquete) {
     char message[80];
 
     memset(message, 0, sizeof(message));
-    printf("Enter the string : ");
 
     fgets(message, sizeof(message), stdin);
     aux_index = strlen(message) - 1;
@@ -30,23 +29,18 @@ void chat(int soquete) {
 
 int main(int argc, char *argv[]) {
 
-    int soquete, connfd, port = 8080;
+    int soquete, port = 8080;
     struct sockaddr_in server;
 
-    // soquete create and varification
     soquete = socket(AF_INET, SOCK_STREAM, 0);
 
     memset(&server, 0, sizeof(server));
-
-    // assign IP, port
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = inet_addr("127.0.0.1");
     server.sin_port = htons(port);
 
-    // connect the client soquete to server soquete
     connect(soquete, (struct sockaddr*)&server, sizeof(server));
 
-    // function for chat
     chat(soquete);
 
 }

@@ -8,7 +8,6 @@
 #include <sys/types.h>
 #include <netdb.h>
 
-// Function designed for chat between client and server.
 void chat(int soquete) {
 
     int message_length, case_aux;
@@ -41,18 +40,14 @@ void chat(int soquete) {
     }
 }
 
-// Driver function
 int main(int argc, char *argv[]) {
 
-    int soquete, connfd, len, port = 8080;
+    int soquete, communication, len, port = 8080;
     struct sockaddr_in server, client;
 
-    // socket create and verification
     soquete = socket(AF_INET, SOCK_STREAM, 0);
 
     memset(&server, 0, sizeof(server));
-
-    // assign IP, port
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = htonl(INADDR_ANY);
     server.sin_port = htons(port);
@@ -64,14 +59,9 @@ int main(int argc, char *argv[]) {
     listen(soquete, 5);
 
     len = sizeof(client);
-    printf("alo3\n");
-    // Accept the data packet from client and verification
-    connfd = accept(soquete, (struct sockaddr*)&client, &len);
-    printf("alo2\n");
-    // Function for chatting between client and server
-    chat(connfd);
-    printf("alo\n");
+    communication = accept(soquete, (struct sockaddr*)&client, &len);
 
-    // After chatting close the socket
+    chat(communication);
+
     close(soquete);
 }

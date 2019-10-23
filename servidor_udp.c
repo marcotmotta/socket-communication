@@ -5,17 +5,15 @@
 #include <sys/socket.h>
 #include<netinet/in.h>
 
-// Driver code
-int main() {
+int main(int argc, char *argv[]) {
 
     int soquete, len, port = 5000, case_aux, message_length;
     char message[80], message_aux;
     struct sockaddr_in server, client;
 
-    memset(&server, 0, sizeof(server));
-  
-    // Create a UDP Socket
     soquete = socket(AF_INET, SOCK_DGRAM, 0);
+
+    memset(&server, 0, sizeof(server));
     server.sin_addr.s_addr = htonl(INADDR_ANY);
     server.sin_port = htons(port);
     server.sin_family = AF_INET;
@@ -23,7 +21,6 @@ int main() {
     // bind server address to socket descriptor
     bind(soquete, (struct sockaddr*)&server, sizeof(server));
 
-    //receive the datagram
     len = sizeof(client);
     recvfrom(soquete, message, sizeof(message), 0, (struct sockaddr*)&client,&len);
 
@@ -45,7 +42,6 @@ int main() {
         case_aux++;
     }
 
-    // send the response
     sendto(soquete, message, 81, 0, (struct sockaddr*)&client, sizeof(client));
 
 } 
