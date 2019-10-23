@@ -41,8 +41,10 @@ void chat(int soquete) {
 
 int main(int argc, char *argv[]) {
 
-    int soquete, communication, len, port = 8080;
+    int soquete, communication, len, port;
     struct sockaddr_in server, client;
+
+    port = atoi(argv[1]);
 
     soquete = socket(AF_INET, SOCK_STREAM, 0);
 

@@ -29,14 +29,18 @@ void chat(int soquete) {
 
 int main(int argc, char *argv[]) {
 
-    int soquete, port = 8080;
+    int soquete, port;
+    char *ip;
     struct sockaddr_in server;
+
+    ip = strdup(argv[1]);
+    port = atoi(argv[2]);
 
     soquete = socket(AF_INET, SOCK_STREAM, 0);
 
     memset(&server, 0, sizeof(server));
     server.sin_family = AF_INET;
-    server.sin_addr.s_addr = inet_addr("127.0.0.1");
+    server.sin_addr.s_addr = inet_addr(ip);
     server.sin_port = htons(port);
 
     connect(soquete, (struct sockaddr*)&server, sizeof(server));

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #include <arpa/inet.h>
@@ -7,9 +8,11 @@
 
 int main(int argc, char *argv[]) {
 
-    int soquete, len, port = 5000, case_aux, message_length;
+    int soquete, len, port, case_aux, message_length;
     char message[81], message_aux;
     struct sockaddr_in server, client;
+
+    port = atoi(argv[1]);
 
     soquete = socket(AF_INET, SOCK_DGRAM, 0);
 
