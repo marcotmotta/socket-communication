@@ -18,6 +18,7 @@ int main(int argc, char *argv[]) {
     port = atoi(argv[2]);
 
     fgets(message, sizeof(message), stdin);
+
     aux_index = strlen(message) - 1;
     if(message[aux_index] == '\n') {
         message[aux_index] = '\0';
@@ -38,4 +39,5 @@ int main(int argc, char *argv[]) {
     printf("%s", received);
 
     close(soquete);
-} 
+
+}

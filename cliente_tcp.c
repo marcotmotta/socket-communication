@@ -15,6 +15,7 @@ void chat(int soquete) {
     memset(message, 0, sizeof(message));
 
     fgets(message, sizeof(message), stdin);
+
     aux_index = strlen(message) - 1;
     if(message[aux_index] == '\n') {
         message[aux_index] = '\0';
