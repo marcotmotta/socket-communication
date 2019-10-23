@@ -17,9 +17,7 @@ void chat(int soquete) {
     while(true) {
         memset(message, 0, 80);
 
-        // read the message from client and copy it in buffer
         read(soquete, message, sizeof(message));
-        // print buffer which contains the client contents
 
         message_length = strlen(message);
 
@@ -39,7 +37,6 @@ void chat(int soquete) {
             case_aux++;
         }
 
-        // and send that buffer to client
         write(soquete, message, sizeof(message));
     }
 }

@@ -9,15 +9,17 @@
 
 void chat(int soquete) {
 
-    int n;
+    int aux_index;
     char message[80];
 
     memset(message, 0, sizeof(message));
     printf("Enter the string : ");
-    n = 0;
 
-    while ((message[n++] = getchar()) != '\n')
-        ;
+    fgets(message, sizeof(message), stdin);
+    aux_index = strlen(message) - 1;
+    if(message[aux_index] == '\n') {
+        message[aux_index] = '\0';
+    }
 
     write(soquete, message, sizeof(message));
     memset(message, 0, sizeof(message));
