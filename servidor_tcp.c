@@ -12,11 +12,11 @@
 #define SA struct sockaddr
 
 // Function designed for chat between client and server.
-void func(int sockfd) {
+void chat(int sockfd) {
 
-    char message[80];
     int n;
-    // infinite loop for chat
+    char message[80];
+
     while(true) {
         memset(message, 0, 80);
 
@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
         printf("server acccept the client...\n");
 
     // Function for chatting between client and server
-    func(connfd);
+    chat(connfd);
 
     // After chatting close the socket
     close(sockfd);
