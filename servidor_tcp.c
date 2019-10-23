@@ -9,52 +9,51 @@
 #include <sys/types.h>
 #include <netdb.h>
 
-#define SA struct sockaddr
-
 // Function designed for chat between client and server.
-void chat(int sockfd) {
+void chat(int soquete) {
 
-    int n;
-    char message[80];
+    int message_length, case_aux;
+    char message[80], message_aux;
 
     while(true) {
         memset(message, 0, 80);
 
         // read the message from client and copy it in buffer
-        read(sockfd, message, sizeof(message));
+        read(soquete, message, sizeof(message));
         // print buffer which contains the client contents
-        printf("From client: %s\t To client : ", message);
-        memset(message, 0, 80);
-        n = 0;
-        // copy server message in the buffer
-        while ((message[n++] = getchar()) != '\n')
-            ;
+
+        message_length = strlen(message);
+
+        for(int i = 0; i < (message_length/2); i++) {
+            message_aux = message[i];
+            message[i] = message[message_length - i - 1];
+            message[message_length - i - 1] = message_aux;
+        }
+
+        case_aux = 0;
+        while (message[case_aux] != '\0') {
+            if (message[case_aux] >= 'a' && message[case_aux] <= 'z') {
+                message[case_aux] = message[case_aux] - 32;
+            } else if (message[case_aux] >= 'A' && message[case_aux <= 'Z']) {
+                message[case_aux] = message[case_aux] + 32;
+            }
+            case_aux++;
+        }
 
         // and send that buffer to client
-        write(sockfd, message, sizeof(message));
-
-        // if msg contains "Exit" then server exit and chat ended.
-        if (strncmp("exit", message, 4) == 0) {
-            printf("Server Exit...\n");
-            break;
-        }
+        write(soquete, message, sizeof(message));
     }
 }
 
 // Driver function
 int main(int argc, char *argv[]) {
 
-    int sockfd, connfd, len, port = 8080;
+    int soquete, connfd, len, port = 8080;
     struct sockaddr_in server, client;
 
     // socket create and verification
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd == -1) {
-        printf("socket creation failed...\n");
-        exit(0);
-    }
-    else
-        printf("Socket successfully created..\n");
+    soquete = socket(AF_INET, SOCK_STREAM, 0);
+
     memset(&server, 0, sizeof(server));
 
     // assign IP, port
@@ -63,34 +62,20 @@ int main(int argc, char *argv[]) {
     server.sin_port = htons(port);
 
     // Binding newly created socket to given IP and verification
-    if ((bind(sockfd, (SA*)&server, sizeof(server))) != 0) {
-        printf("socket bind failed...\n");
-        exit(0);
-    }
-    else
-        printf("Socket successfully binded..\n");
+    bind(soquete, (struct sockaddr*)&server, sizeof(server));
 
     // Now server is ready to listen and verification
-    if ((listen(sockfd, 5)) != 0) {
-        printf("Listen failed...\n");
-        exit(0);
-    }
-    else
-        printf("Server listening..\n");
+    listen(soquete, 5);
+
     len = sizeof(client);
-
+    printf("alo3\n");
     // Accept the data packet from client and verification
-    connfd = accept(sockfd, (SA*)&client, &len);
-    if (connfd < 0) {
-        printf("server acccept failed...\n");
-        exit(0);
-    }
-    else
-        printf("server acccept the client...\n");
-
+    connfd = accept(soquete, (struct sockaddr*)&client, &len);
+    printf("alo2\n");
     // Function for chatting between client and server
     chat(connfd);
+    printf("alo\n");
 
     // After chatting close the socket
-    close(sockfd);
+    close(soquete);
 }
