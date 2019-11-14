@@ -21,4 +21,4 @@ Everytime the client sends a message the server will invert the sentence and cha
 
 > $ ./clienteUDP \<ip\> \<port\>
   
-<b>Note:</b> The port on the server and on the client must be the same.
+<b>Note:</b> The port on the server and on the client must be the same for the communication to happen.
