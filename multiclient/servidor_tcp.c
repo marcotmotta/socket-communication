@@ -8,13 +8,6 @@
 #include <sys/types.h>
 #include <netdb.h>
 
-/**
-  *  O esqueleto do código abaixo foi inspirado na seguinte implementação:
-  *  https://www.geeksforgeeks.org/tcp-server-client-implementation-in-c/
-  *  Vale ressaltar que apesar da lógica ter sido aproveitada o código é estritamente
-  *  diferente, além de realizar ações e produzir resultados totalmente distintos.
-  */
-
 void chat(int soquete) {
 
     int message_length, case_aux;
