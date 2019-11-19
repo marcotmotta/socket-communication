@@ -55,9 +55,9 @@ int main(int argc, char *argv[]) {
 
     bind(soquete, (struct sockaddr*)&server, sizeof(server));
 
-    while(1) {
-        listen(soquete, 5);
+    listen(soquete, 5);
 
+    while(1) {
         len = sizeof(client);
         communication = accept(soquete, (struct sockaddr*)&client, &len);
 
