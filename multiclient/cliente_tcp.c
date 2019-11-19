@@ -8,7 +8,6 @@
 #include <netdb.h>
 
 void chat(int soquete, char* nome) {
-
     int aux_index, quit = 0;
     char message[81], *full;
 
@@ -23,18 +22,18 @@ void chat(int soquete, char* nome) {
         }
 
         write(soquete, message, sizeof(message));
+
         if(strncmp("exit", message, 4) == 0){
             break;
         }
+
         memset(message, 0, sizeof(message));
         read(soquete, message, sizeof(message));
         printf("%s\n", message);
     }
-
 }
 
 int main(int argc, char *argv[]) {
-
     int soquete, port;
     char *ip, *nome;
     struct sockaddr_in server;
@@ -53,5 +52,4 @@ int main(int argc, char *argv[]) {
     connect(soquete, (struct sockaddr*)&server, sizeof(server));
 
     chat(soquete, nome);
-
 }

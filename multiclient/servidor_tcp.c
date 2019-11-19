@@ -10,8 +10,6 @@
 #include <pthread.h>
 
 void* chat(void* arg) {
-//void chat(int soquete){
-
     int message_length, case_aux, soquete = *((int*)arg);
     char message[81], message_aux;
 
@@ -32,11 +30,9 @@ void* chat(void* arg) {
     }
 
     return NULL;
-
 }
 
 int main(int argc, char *argv[]) {
-
     int soquete, communication, len, port;
     struct sockaddr_in server, client;
 
@@ -62,9 +58,7 @@ int main(int argc, char *argv[]) {
 
         pthread_t t;
         pthread_create(&t, NULL, chat, arg);
-        //chat(communication);
     }
 
     close(soquete);
-
 }
