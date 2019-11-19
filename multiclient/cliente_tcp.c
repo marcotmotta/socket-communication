@@ -7,35 +7,41 @@
 #include <sys/socket.h>
 #include <netdb.h>
 
-void chat(int soquete) {
+void chat(int soquete, char* nome) {
 
-    int aux_index;
-    char message[81];
+    int aux_index, quit = 0;
+    char message[81], *full;
 
-    memset(message, 0, sizeof(message));
+    while(1){
+        memset(message, 0, sizeof(message));
 
-    fgets(message, sizeof(message), stdin);
+        fgets(message, sizeof(message), stdin);
 
-    aux_index = strlen(message) - 1;
-    if(message[aux_index] == '\n') {
-        message[aux_index] = '\0';
+        aux_index = strlen(message) - 1;
+        if(message[aux_index] == '\n') {
+            message[aux_index] = '\0';
+        }
+
+        write(soquete, message, sizeof(message));
+        if(strncmp("exit", message, 4) == 0){
+            break;
+        }
+        memset(message, 0, sizeof(message));
+        read(soquete, message, sizeof(message));
+        printf("%s\n", message);
     }
-
-    write(soquete, message, sizeof(message));
-    memset(message, 0, sizeof(message));
-    read(soquete, message, sizeof(message));
-    printf("%s", message);
 
 }
 
 int main(int argc, char *argv[]) {
 
     int soquete, port;
-    char *ip;
+    char *ip, *nome;
     struct sockaddr_in server;
 
     ip = strdup(argv[1]);
     port = atoi(argv[2]);
+    nome = argv[3];
 
     soquete = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -46,6 +52,6 @@ int main(int argc, char *argv[]) {
 
     connect(soquete, (struct sockaddr*)&server, sizeof(server));
 
-    chat(soquete);
+    chat(soquete, nome);
 
 }

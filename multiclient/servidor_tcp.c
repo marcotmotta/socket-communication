@@ -10,34 +10,26 @@
 #include <pthread.h>
 
 void* chat(void* arg) {
+//void chat(int soquete){
 
     int message_length, case_aux, soquete = *((int*)arg);
     char message[81], message_aux;
 
-    memset(message, 0, 81);
     free(arg);
 
-    read(soquete, message, sizeof(message));
+    while(1){
+        memset(message, 0, 81);
 
-    message_length = strlen(message);
+        read(soquete, message, sizeof(message));
 
-    for(int i = 0; i < (message_length/2); i++) {
-        message_aux = message[i];
-        message[i] = message[message_length - i - 1];
-        message[message_length - i - 1] = message_aux;
-    }
-
-    case_aux = 0;
-    while (message[case_aux] != '\0') {
-        if (message[case_aux] >= 'a' && message[case_aux] <= 'z') {
-            message[case_aux] = message[case_aux] - 32;
-        } else if (message[case_aux] >= 'A' && message[case_aux <= 'Z']) {
-            message[case_aux] = message[case_aux] + 32;
+        if (strncmp("exit", message, 4) == 0) {
+            break;
         }
-        case_aux++;
-    }
 
-    write(soquete, message, sizeof(message));
+
+
+        write(soquete, message, sizeof(message));
+    }
 
     return NULL;
 
@@ -70,7 +62,6 @@ int main(int argc, char *argv[]) {
 
         pthread_t t;
         pthread_create(&t, NULL, chat, arg);
-
         //chat(communication);
     }
 
