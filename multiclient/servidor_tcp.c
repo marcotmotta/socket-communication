@@ -7,13 +7,15 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netdb.h>
+#include <pthread.h>
 
-void chat(int soquete) {
+void* chat(void* arg) {
 
-    int message_length, case_aux;
+    int message_length, case_aux, soquete = *((int*)arg);
     char message[81], message_aux;
 
     memset(message, 0, 81);
+    free(arg);
 
     read(soquete, message, sizeof(message));
 
@@ -37,6 +39,8 @@ void chat(int soquete) {
 
     write(soquete, message, sizeof(message));
 
+    return NULL;
+
 }
 
 int main(int argc, char *argv[]) {
@@ -55,13 +59,19 @@ int main(int argc, char *argv[]) {
 
     bind(soquete, (struct sockaddr*)&server, sizeof(server));
 
-    listen(soquete, 5);
+    listen(soquete, 256);
 
     while(1) {
         len = sizeof(client);
         communication = accept(soquete, (struct sockaddr*)&client, &len);
 
-        chat(communication);
+        int *arg = malloc(sizeof(int));
+        *arg = communication;
+
+        pthread_t t;
+        pthread_create(&t, NULL, chat, arg);
+
+        //chat(communication);
     }
 
     close(soquete);
