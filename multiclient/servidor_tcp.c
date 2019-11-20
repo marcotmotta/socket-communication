@@ -40,7 +40,7 @@ void* chat(void* arg) {
             have_name = 1;
         }
 
-        write(soquete, message, sizeof(message));
+        //write(soquete, message, sizeof(message));
     }
 
     return NULL;
