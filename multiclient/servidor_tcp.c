@@ -9,7 +9,7 @@
 #include <netdb.h>
 #include <pthread.h>
 
-#define MAX 255;
+#define MAX 255
 
 char* nomes[MAX];
 int soquetes[MAX];
@@ -31,16 +31,42 @@ void* chat(void* arg) {
             break;
         } else if(strcmp("users", message) == 0){
             //retorna todos os usuarios
+
         } else if(strncmp("all;", message, 4) == 0){
             //envia mensagem para todos os clientes conectados
+
         } else if(strncmp("uni;", message, 4) == 0){
             //envia mensagem para cliente X
+            //lock (or maybe not? its just reading)
+            char *nome_aux = message + 4;
+            strtok(nome_aux, ";");
+            char* msg = message + (5 + strlen(nome_aux));
+            for(int i = 0; i < MAX; i++){
+                if(strcmp(nomes[i], nome_aux)){
+                    write(soquetes[i], msg, sizeof(msg));
+                    break;
+                }
+            }
+            //unlock
         } else if(have_name == 0){
             //insere cliente com o nome recebido
-            have_name = 1;
+            //lock
+            for(int i = 0; i < MAX; i++){
+                if(posicoes[i] == false){
+                    nomes[i] = message;
+                    soquetes[i] = soquete;
+                    posicoes[i] = true;
+                    have_name = 1;
+                    break;
+                }
+            }
+            if(have_name == 0){
+                printf("Cliente não cadastrado. Limite máximo atingido.\n");
+            }
+            //unlock
         }
 
-        //write(soquete, message, sizeof(message));
+        write(soquete, message, sizeof(message));
     }
 
     return NULL;

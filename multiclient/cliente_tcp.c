@@ -11,6 +11,9 @@ void chat(int soquete, char* nome) {
     int aux_index;
     char message[81];
 
+    //Envia string com o nome do cliente para o servidor
+    write(soquete, nome, sizeof(nome));
+
     while(1){
         memset(message, 0, sizeof(message));
 
