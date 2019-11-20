@@ -26,7 +26,7 @@ void* chat(void* arg) {
 
         read(soquete, message, sizeof(message));
 
-        if (strncmp("exit", message, 4) == 0) {
+        if (strcmp("exit", message) == 0) {
             //atualiza lista de ususarios
             break;
         } else if(strcmp("users", message) == 0){

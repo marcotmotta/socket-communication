@@ -23,7 +23,7 @@ void chat(int soquete, char* nome) {
 
         write(soquete, message, sizeof(message));
 
-        if(strncmp("exit", message, 4) == 0){
+        if(strcmp("exit", message) == 0){
             break;
         }
 
