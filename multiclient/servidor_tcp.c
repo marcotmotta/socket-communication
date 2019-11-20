@@ -11,8 +11,11 @@
 
 #define MAX 255
 
-char* nomes[MAX];
+//Nomes dos clientes
+char nomes[MAX][16];
+//Soquetes dos clientes
 int soquetes[MAX];
+//Posicao está ocupada por um cliente ou nao
 bool posicoes[MAX];
 
 pthread_mutex_t lock;
@@ -26,14 +29,16 @@ void* chat(void* arg) {
     while(1){
         memset(message, 0, 81);
 
+        //Lê mensagem do cliente
         read(soquete, message, sizeof(message));
 
         if (strcmp("exit", message) == 0) {
-            //atualiza lista de ususarios
+            //Atualiza lista de ususarios caso um usuario saia
             pthread_mutex_lock(&lock);
             for(int i = 0; i < MAX; i++){
                 if(soquetes[i] == soquete){
-                    nomes[i] = NULL;
+                    write(soquete, message, sizeof(message));
+                    memset(nomes[i], 0, 16);
                     soquetes[i] = -1;
                     posicoes[i] = false;
                     break;
@@ -41,33 +46,51 @@ void* chat(void* arg) {
             }
             pthread_mutex_unlock(&lock);
         } else if(strcmp("users", message) == 0){
-            //retorna todos os usuarios
-
+            //Retorna lista com todos os usuarios conectados
+            char msg[4097];
+            memset(msg, 0, 4097);
+            int first = 1;
+            for(int i = 0; i < MAX; i++){
+                if(posicoes[i] == true){
+                    if(first){
+                        strcpy(msg, nomes[i]);
+                        first--;
+                    } else {
+                        strcat(msg, "\n");
+                        strcat(msg, nomes[i]);
+                    }
+                }
+            }
+            write(soquete, msg, 81);
         } else if(strncmp("all;", message, 4) == 0){
-            //envia mensagem para todos os clientes conectados
-            char* msg = message + 4;
+            //Envia mensagem para todos os clientes conectados
+            char msg[81];
+            memset(msg, 0, 81);
+            strcpy(msg, (message + 4));
             for(int i = 0; i < MAX; i++){
                 if(posicoes[i] == true){
                     write(soquetes[i], msg, sizeof(msg));
                 }
             }
         } else if(strncmp("uni;", message, 4) == 0){
-            //envia mensagem para cliente X
+            //Envia mensagem para um cliente especifico
+            char msg[81];
+            memset(msg, 0, 81);
             char *nome_aux = message + 4;
             strtok(nome_aux, ";");
-            char* msg = message + (5 + strlen(nome_aux));
+            strcpy(msg, (message + (5 + strlen(nome_aux))));
             for(int i = 0; i < MAX; i++){
-                if(strcmp(nomes[i], nome_aux)){
+                if(strcmp(nomes[i], nome_aux) == 0){
                     write(soquetes[i], msg, sizeof(msg));
                     break;
                 }
             }
         } else if(have_name == 0){
-            //insere cliente com o nome recebido
+            //Insere cliente com o nome recebido
             pthread_mutex_lock(&lock);
             for(int i = 0; i < MAX; i++){
                 if(posicoes[i] == false){
-                    nomes[i] = message;
+                    strcpy(nomes[i], message);
                     soquetes[i] = soquete;
                     posicoes[i] = true;
                     have_name = 1;
@@ -75,15 +98,11 @@ void* chat(void* arg) {
                 }
             }
             if(have_name == 0){
-                printf("Cliente não cadastrado. Limite máximo atingido.\n");
-                //manda isso pro cliente ^
+                char msg[81] = "Cliente não pôde ser cadastrado.";
+                write(soquete, msg, sizeof(msg));
             }
             pthread_mutex_unlock(&lock);
-        } else {
-            //comando invalido
         }
-
-        //write(soquete, message, sizeof(message));
     }
 
     return NULL;
@@ -94,7 +113,7 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in server, client;
 
     for(int i = 0; i < MAX; i++){
-        nomes[i] = NULL;
+        memset(nomes[i], 0, 16);
         soquetes[i] = -1;
         posicoes[i] = false;
     }
@@ -119,6 +138,7 @@ int main(int argc, char *argv[]) {
         int *arg = malloc(sizeof(int));
         *arg = communication;
 
+        //Cria uma thread nova de comunicação para cada cliente que se conecta com o servidor
         pthread_t t;
         pthread_create(&t, NULL, chat, arg);
     }

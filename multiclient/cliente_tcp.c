@@ -6,17 +6,45 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <pthread.h>
 
-void chat(int soquete, char* nome) {
+//Nome do cliente
+char *nome;
+//Soquete do cliente
+int soquete;
+
+void* readChat(void *arg){
+    char message[81];
+
+    //Loop para cliente permanecer lendo o que o servidor mandar
+    while(1){
+        memset(message, 0, sizeof(message));
+        //Lê mensagem do servidor
+        read(soquete, message, sizeof(message));
+
+        //Interrompe caso a mensagem recebida seja exit
+        if(strcmp("exit", message) == 0){
+            break;
+        }
+
+        printf("%s\n", message);
+    }
+
+    return NULL;
+}
+
+void* writeChat(void *arg) {
     int aux_index;
     char message[81];
 
     //Envia string com o nome do cliente para o servidor
     write(soquete, nome, sizeof(nome));
 
+    //Loop para permanecer enviando mensagens ao servidor
     while(1){
         memset(message, 0, sizeof(message));
 
+        //Lê mensagem do stdin
         fgets(message, sizeof(message), stdin);
 
         aux_index = strlen(message) - 1;
@@ -24,21 +52,21 @@ void chat(int soquete, char* nome) {
             message[aux_index] = '\0';
         }
 
+        //Envia mensagem para servidor
         write(soquete, message, sizeof(message));
 
+        //Sai caso a mensagem escrita for exit
         if(strcmp("exit", message) == 0){
             break;
         }
-
-        memset(message, 0, sizeof(message));
-        read(soquete, message, sizeof(message));
-        printf("%s\n", message);
     }
+
+    return NULL;
 }
 
 int main(int argc, char *argv[]) {
-    int soquete, port;
-    char *ip, *nome;
+    int port;
+    char *ip;
     struct sockaddr_in server;
 
     ip = strdup(argv[1]);
@@ -54,5 +82,13 @@ int main(int argc, char *argv[]) {
 
     connect(soquete, (struct sockaddr*)&server, sizeof(server));
 
-    chat(soquete, nome);
+    //Cria duas threads.
+    //Uma pra ler do servidor e outra pra escrever pro servidor.
+    //Assim, ambas as ações independem uma da outra
+    pthread_t t[2];
+    pthread_create(&(t[0]), NULL, writeChat, NULL);
+    pthread_create(&(t[1]), NULL, readChat, NULL);
+
+    pthread_join(t[0], NULL);
+    pthread_join(t[1], NULL);
 }
