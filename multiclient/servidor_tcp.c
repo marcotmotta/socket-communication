@@ -15,6 +15,8 @@ char* nomes[MAX];
 int soquetes[MAX];
 bool posicoes[MAX];
 
+pthread_mutex_t lock;
+
 void* chat(void* arg) {
     int soquete = *((int*)arg), have_name = 0;
     char message[81];
@@ -28,16 +30,29 @@ void* chat(void* arg) {
 
         if (strcmp("exit", message) == 0) {
             //atualiza lista de ususarios
-            break;
+            pthread_mutex_lock(&lock);
+            for(int i = 0; i < MAX; i++){
+                if(soquetes[i] == soquete){
+                    nomes[i] = NULL;
+                    soquetes[i] = -1;
+                    posicoes[i] = false;
+                    break;
+                }
+            }
+            pthread_mutex_unlock(&lock);
         } else if(strcmp("users", message) == 0){
             //retorna todos os usuarios
 
         } else if(strncmp("all;", message, 4) == 0){
             //envia mensagem para todos os clientes conectados
-
+            char* msg = message + 4;
+            for(int i = 0; i < MAX; i++){
+                if(posicoes[i] == true){
+                    write(soquetes[i], msg, sizeof(msg));
+                }
+            }
         } else if(strncmp("uni;", message, 4) == 0){
             //envia mensagem para cliente X
-            //lock (or maybe not? its just reading)
             char *nome_aux = message + 4;
             strtok(nome_aux, ";");
             char* msg = message + (5 + strlen(nome_aux));
@@ -47,10 +62,9 @@ void* chat(void* arg) {
                     break;
                 }
             }
-            //unlock
         } else if(have_name == 0){
             //insere cliente com o nome recebido
-            //lock
+            pthread_mutex_lock(&lock);
             for(int i = 0; i < MAX; i++){
                 if(posicoes[i] == false){
                     nomes[i] = message;
@@ -62,11 +76,14 @@ void* chat(void* arg) {
             }
             if(have_name == 0){
                 printf("Cliente não cadastrado. Limite máximo atingido.\n");
+                //manda isso pro cliente ^
             }
-            //unlock
+            pthread_mutex_unlock(&lock);
+        } else {
+            //comando invalido
         }
 
-        write(soquete, message, sizeof(message));
+        //write(soquete, message, sizeof(message));
     }
 
     return NULL;
@@ -105,6 +122,8 @@ int main(int argc, char *argv[]) {
         pthread_t t;
         pthread_create(&t, NULL, chat, arg);
     }
+
+    pthread_mutex_destroy(&lock);
 
     close(soquete);
 }
