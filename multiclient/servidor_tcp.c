@@ -29,7 +29,7 @@ void* chat(void* arg) {
         if (strncmp("exit", message, 4) == 0) {
             //atualiza lista de ususarios
             break;
-        } else if(strncmp("users", message, 5) == 0){
+        } else if(strcmp("users", message) == 0){
             //retorna todos os usuarios
         } else if(strncmp("all;", message, 4) == 0){
             //envia mensagem para todos os clientes conectados
