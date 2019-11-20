@@ -8,8 +8,8 @@
 #include <netdb.h>
 
 void chat(int soquete, char* nome) {
-    int aux_index, quit = 0;
-    char message[81], *full;
+    int aux_index;
+    char message[81];
 
     while(1){
         memset(message, 0, sizeof(message));

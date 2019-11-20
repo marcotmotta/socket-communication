@@ -9,9 +9,15 @@
 #include <netdb.h>
 #include <pthread.h>
 
+#define MAX 255;
+
+char* nomes[MAX];
+int soquetes[MAX];
+bool posicoes[MAX];
+
 void* chat(void* arg) {
-    int message_length, case_aux, soquete = *((int*)arg);
-    char message[81], message_aux;
+    int soquete = *((int*)arg), have_name = 0;
+    char message[81];
 
     free(arg);
 
@@ -21,10 +27,18 @@ void* chat(void* arg) {
         read(soquete, message, sizeof(message));
 
         if (strncmp("exit", message, 4) == 0) {
+            //atualiza lista de ususarios
             break;
+        } else if(strncmp("users", message, 5) == 0){
+            //retorna todos os usuarios
+        } else if(strncmp("all;", message, 4) == 0){
+            //envia mensagem para todos os clientes conectados
+        } else if(strncmp("uni;", message, 4) == 0){
+            //envia mensagem para cliente X
+        } else if(have_name == 0){
+            //insere cliente com o nome recebido
+            have_name = 1;
         }
-
-
 
         write(soquete, message, sizeof(message));
     }
@@ -35,6 +49,12 @@ void* chat(void* arg) {
 int main(int argc, char *argv[]) {
     int soquete, communication, len, port;
     struct sockaddr_in server, client;
+
+    for(int i = 0; i < MAX; i++){
+        nomes[i] = NULL;
+        soquetes[i] = -1;
+        posicoes[i] = false;
+    }
 
     port = atoi(argv[1]);
 
