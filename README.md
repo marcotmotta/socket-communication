@@ -34,4 +34,12 @@ Everytime the client sends a message the server will invert the sentence and cha
 ### To compile:
 > $ make
 ### To run:
-> WIP
+<b>Server:</b> <br>
+
+> $ ./servidorTCP \<port\>
+  
+<b>Client(s):</b>
+
+> $ ./clienteTCP \<ip\> \<port\> \<client_name\>
+  
+<b>Note:</b> The port on the server and on the client must be the same for the communication to happen.
